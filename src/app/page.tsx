@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { auth, signIn, signOut } from "@/auth";
 
 export default function Home() {
   return (
@@ -42,11 +43,53 @@ export default function Home() {
             </Link>
           </Button>
         </li>
+        <li>
+          <Link href="https://authjs.dev/getting-started" target="_blank" rel="noreferrer">
+            Auth.js
+          </Link>
+        </li>
+        <ul>
+          <AuthJs />
+        </ul>
       </ul>
       <p className="flex items-center justify-center rounded-xl border border-b border-gray-200 bg-gray-100 bg-gradient-to-b from-zinc-100 p-4 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit">
         Get started by editing&nbsp;
         <code>src/app/page.tsx</code>
       </p>
     </main>
+  );
+}
+
+async function AuthJs() {
+  const session = await auth();
+  if (session?.user) {
+    return (
+      <>
+        <li>Sign in as {session.user.email}</li>
+        <li>
+          <form
+            action={async function () {
+              "use server";
+              await signOut();
+            }}
+          >
+            <Button variant="secondary">Sign out</Button>
+          </form>
+        </li>
+      </>
+    );
+  }
+
+  return (
+    <li>
+      <form
+        action={async function () {
+          "use server";
+          await signIn("github");
+        }}
+      >
+        <Button variant="secondary">Sign in</Button>
+      </form>
+    </li>
   );
 }
